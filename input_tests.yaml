@@ -26,13 +26,13 @@ version: 1.0.0
 #  users:
 #    # comment
 
-# Case4: Duplicate user (conflict with "main.yaml")
+# Case4: Duplicate user (conflict with "input_main.yaml")
 # Expected result: transpiling must fail
 #passwd:
 #  users:
 #    - name: webby
 
-# Case5: This is ok (resulting merged Butane will have both this and the same section from "main.yaml")
+# Case5: This is ok (resulting merged Butane will have both this and the same section from "input_main.yaml")
 # Expected result: pass without errors
 #passwd:
 #  users:
