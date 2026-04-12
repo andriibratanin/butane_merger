@@ -5,3 +5,8 @@ It solves head-aches of those who decided to follow best practices and split the
 
 Inspired by [official docs](https://www.flatcar.org/docs/latest/learning-series/advanced-service-config/#splitting-the-configuration-file) of Flatcar.  
 The included example is based on the same docs.
+
+Kudos to:
+- Mike Farah
+- Flatcar
+- Docker
