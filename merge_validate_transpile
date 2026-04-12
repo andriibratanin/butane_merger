@@ -42,6 +42,11 @@ input_files_list=$(printf '"%s" ' "${input_files[@]}")
 echo "Input files:"
 echo "$input_files_list"
 
+if ! yq --version > /dev/null; then
+  echo "YQ util not found!"
+  exit 1
+fi
+
 echo "Validating input files:"
 for input_file in "${input_files[@]}"; do
   echo "- $input_file"
@@ -66,10 +71,6 @@ for input_file in "${input_files[@]}"; do
 done
 
 echo "Merging input files into '$butane_result'"
-if ! yq --version > /dev/null; then
-  echo "YQ util not found!"
-  exit 1
-fi
 
 # Eval is needed to expand "input_files_list" into: "filename 1.yaml" "filename 2.yaml"
 # This is done to allow whitespaces in filenames.
