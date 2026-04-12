@@ -1,0 +1,39 @@
+variant: flatcar
+version: 1.0.0
+
+# This file is for validation logic testing purposes
+# Uncomment each "test" separately, then run the main script for each of them
+
+# Note: validation is supposed to fail on
+# - empty values
+# - empty values as "[]"
+# - comments only
+
+# Case1: Empty value
+# Expected result: validation must fail
+#passwd:
+#  users:
+
+# Case2: Empty value as array
+# Expected result: validation must fail
+#passwd:
+#  users:
+#    []
+
+# Case3: Empty value as comment
+# Expected result: validation must fail
+#passwd:
+#  users:
+#    # comment
+
+# Case4: Duplicate user (conflict with "main.yaml")
+# Expected result: transpiling must fail
+#passwd:
+#  users:
+#    - name: webby
+
+# Case5: This is ok (resulting merged Butane will have both this and the same section from "main.yaml")
+# Expected result: pass without errors
+#passwd:
+#  users:
+#    - name: webby2
