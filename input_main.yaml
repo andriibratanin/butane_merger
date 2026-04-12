@@ -1,0 +1,9 @@
+variant: flatcar
+version: 1.0.0
+
+passwd:
+  users:
+    - name: webby
+      uid: 1234
+      no_create_home: true
+      groups: [ docker ]

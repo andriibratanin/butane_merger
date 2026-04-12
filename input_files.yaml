@@ -1,0 +1,36 @@
+variant: flatcar
+version: 1.0.0
+
+storage:
+  files:
+    - path: /srv/www/html/index.html
+      mode: 0644
+      user:
+        name: webby
+      group:
+        name: webby
+      contents:
+        inline: |
+          <html><body align="center">
+          <img src="logo.svg" alt="Flatcar logo" />
+          <h1>Hello, World 👋</h1>
+          <video autoplay muted loop width="640" height="480" src="video.mp4">
+          Your browser does not support the &gt;video&lt; HTML tag.
+          </video>
+          </body></html>
+    - path: /srv/www/html/logo.svg
+      mode: 0644
+      user:
+        name: webby
+      group:
+        name: webby
+      contents:
+        source: https://www.flatcar.org/media/brand-logo.svg
+    - path: /srv/www/html/video.mp4
+      mode: 0644
+      user:
+        name: webby
+      group:
+        name: webby
+      contents:
+        source: https://github.com/flatcar/flatcar-website/raw/refs/heads/main/static/videos/hero-video.mp4
