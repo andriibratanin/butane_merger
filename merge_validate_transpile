@@ -7,7 +7,7 @@
 # - https://www.flatcar.org/docs/latest/learning-series/advanced-service-config/#splitting-the-configuration-file
 #
 # Additional validation is able to find subtle errors like:
-# - duplicate section declarations (withot this check last section will silently win)
+# - duplicate section declarations (without this check last section will silently win)
 # - empty section (without this check all values in the section will be silently discarded)
 #
 # Prerequisites: yq, docker
@@ -16,7 +16,7 @@
 #   - Known good version is 4.52.5: sudo wget https://github.com/mikefarah/yq/releases/download/v4.52.5/yq_linux_amd64 -O /usr/local/bin/yq
 # - sudo chmod +x /usr/local/bin/yq
 #
-# Dependencies licenses:
+# Dependencies' licenses:
 # - Docker Desktop license is "Docker Subscription Service Agreement" - https://docs.docker.com/subscription/desktop-license/
 # - YQ license is "MIT", Copyright (c) 2017 Mike Farah - https://github.com/mikefarah/yq/blob/master/LICENSE
 
