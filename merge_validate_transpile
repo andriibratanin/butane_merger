@@ -23,7 +23,12 @@
 # Configuration
 
 # Note: filenames with whitespaces are ok
-input_files=("input_files.yaml" "input_systemd.yaml" "input_main.yaml" "input_tests.yaml")
+input_files=( \
+    "input_files.yaml" \
+    "input_systemd.yaml" \
+    "input_main.yaml" \
+    "input_tests.yaml"\
+)
 
 butane_result="result_butane.bu"
 #butane_result="result_butane.yaml"
