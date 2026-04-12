@@ -1,0 +1,95 @@
+#/bin/bash
+#
+# Script to validate and merge several Butane files into one, then transpile it into Ignition
+# MIT, Copyright (c) Andrii Bratanin, 2026
+#
+# Inspired by:
+# - https://www.flatcar.org/docs/latest/learning-series/advanced-service-config/#splitting-the-configuration-file
+#
+# Additional validation is able to find subtle errors like:
+# - duplicate section declarations (withot this check last section will silently win)
+# - empty section (without this check all values in the section will be silently discarded)
+#
+# Prerequisites: yq, docker
+# To install "yq" run:
+# - sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+#   - Known good version is 4.52.5: sudo wget https://github.com/mikefarah/yq/releases/download/v4.52.5/yq_linux_amd64 -O /usr/local/bin/yq
+# - sudo chmod +x /usr/local/bin/yq
+#
+# Dependencies licenses:
+# - Docker Desktop license is "Docker Subscription Service Agreement" - https://docs.docker.com/subscription/desktop-license/
+# - YQ license is "MIT", Copyright (c) 2017 Mike Farah - https://github.com/mikefarah/yq/blob/master/LICENSE
+
+# Configuration
+
+# Note: filenames with whitespaces are ok
+input_files=("input_files.yaml" "input_systemd.yaml" "input_main.yaml" "input_tests.yaml")
+
+butane_result="result_butane.bu"
+#butane_result="result_butane.yaml"
+
+ignition_result="result_ignition.ign"
+#ignition_result="result_ignition.json"
+
+# Logic
+
+input_files_list=$(printf '"%s" ' "${input_files[@]}")
+echo "Input files:"
+echo "$input_files_list"
+
+echo "Validating input files:"
+for input_file in "${input_files[@]}"; do
+  echo "- $input_file"
+
+  # Check for duplicate top-level keys (like 'passwd:')
+  dupes=$(grep -E '^[a-z0-9_]+:' "$input_file" | cut -d: -f1 | sort | uniq -d)
+
+  if [ -n "$dupes" ]; then
+    echo "Duplicate section declarations found:"
+    echo "$dupes"
+    exit 1
+  fi
+
+  # Find all empty paths and store them in a variable
+  bad_paths=$(yq eval '.. | select(. == null or (tag == "!!seq" and length == 0) or . == "") | path | join(".")' "$input_file")
+
+  if [ -n "$bad_paths" ]; then
+    echo "Validation failed - empty values detected at:"
+    echo "$bad_paths"
+    exit 1
+  fi
+done
+
+echo "Merging input files into '$butane_result'"
+if ! yq --version > /dev/null; then
+  echo "YQ util not found!"
+  exit 1
+fi
+
+# Eval is needed to expand "input_files_list" into: "filename 1.yaml" "filename 2.yaml"
+# This is done to allow whitespaces in filenames.
+# Mind the variables and quotes escaping (there must be none for "input_files_list")!
+eval "yq eval-all '. as \$item ireduce ({}; . *+ \$item)' $input_files_list > \"$butane_result\""
+if [ $? -ne 0 ]; then
+  # Error message is already printed by yq
+  rm "$butane_result"
+  exit 1
+fi
+
+echo "Transpiling '$butane_result' into '$ignition_result'"
+if ! docker info > /dev/null; then
+  echo "Docker is not running!"
+  exit 1
+fi
+
+# Notes:
+# - "--strict" parameter used to fail on yaml errors and warnings
+# - remove "--pretty" parameter to get more compact but less readable json result
+cat "$butane_result" | docker run --rm -v "$(pwd):/files" -i quay.io/coreos/butane:latest --files-dir /files --strict --pretty > "$ignition_result"
+if [ $? -ne 0 ]; then
+  # Error message is already printed by butane
+  rm "$ignition_result"
+  exit 1
+fi
+
+echo "Done."
